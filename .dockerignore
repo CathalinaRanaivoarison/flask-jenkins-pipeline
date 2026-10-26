@@ -3,3 +3,4 @@ Dockerfile
 .dockerignore
 .DS_Store
 Jenkinsfile
+README.md
