@@ -6,6 +6,15 @@ pipeline {
     }
 
     stages{
+        stage('Code quality'){
+            steps{
+                sh '''
+                    docker run --rm -i hadolint/hadolint < Dockerfile
+                    docker run --rm --volumes-from jenkins -w "$WORKSPACE" python:3.14-slim sh -c "pip install -q flake8 && flake8 ."
+
+                '''
+            }
+        }
         stage('Build'){
             steps{
                 sh 'docker build -t flask-app:v$BUILD_NUMBER .'

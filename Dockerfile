@@ -1,17 +1,17 @@
 FROM python:3.14-slim
 
-RUN useradd appuser 
+RUN useradd -u 1000 appuser
 
 WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
 EXPOSE 8080
 
-USER appuser
+USER 1000
 
 CMD ["gunicorn","-c","gunicorn.conf.py","main:app"]
