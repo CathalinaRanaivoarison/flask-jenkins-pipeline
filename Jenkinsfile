@@ -36,5 +36,24 @@ pipeline {
             }
         }
 
+        stage('Package') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
+                                                usernameVariable: 'DH_USER',
+                                                passwordVariable: 'DH_TOKEN')]) {
+                    sh '''
+                        echo "$DH_TOKEN" | docker login -u "$DH_USER" --password-stdin
+                        docker tag flask-app:v$BUILD_NUMBER cathalina/flask-app:v$BUILD_NUMBER
+                        docker push cathalina/flask-app:v$BUILD_NUMBER
+                    '''
+                }
+            }
+            post {
+                always {
+                    sh 'docker logout || true'
+                }
+            }
+        }
+
     }
 }
