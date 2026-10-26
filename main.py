@@ -12,7 +12,7 @@ def hello():
     return "Hello World"
 
 
-@app.route("/health")
+@app.route("/sante")#health
 def health():
     """Health check used by the pipeline and Ansible."""
     return jsonify(status="ok", env=os.getenv("APP_ENV", "dev"))
