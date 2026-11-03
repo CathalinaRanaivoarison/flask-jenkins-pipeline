@@ -55,5 +55,18 @@ pipeline {
             }
         }
 
+        stage('Deploy staging') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'aws-ssh-key',
+                                                keyFileVariable: 'SSH_KEY')]) {
+                    sh '''
+                        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml \
+                          -e "image_tag=v$BUILD_NUMBER app_env=staging ansible_ssh_private_key_file=$SSH_KEY"
+                        curl -f http://35.181.56.97/health
+                    '''
+                }
+            }
+        }
+
     }
 }
