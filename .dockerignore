@@ -6,7 +6,6 @@ Jenkinsfile
 README.md
 ansible
 .gitlab-ci.yml
-requirements.txt
 pytest.ini
 .flake8
 .gitignore
