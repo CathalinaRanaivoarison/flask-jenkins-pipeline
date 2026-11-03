@@ -4,3 +4,12 @@ Dockerfile
 .DS_Store
 Jenkinsfile
 README.md
+ansible
+.gitlab-ci.yml
+requirements.txt
+pytest.ini
+.flake8
+.gitignore
+.pytest_cache
+__pycache__
+*.pyc

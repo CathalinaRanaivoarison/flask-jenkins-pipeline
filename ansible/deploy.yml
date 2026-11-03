@@ -1,0 +1,28 @@
+- name: Déployer l'appli Flask
+  hosts: staging
+  become: true
+
+  tasks:
+    - name: Installer Docker
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Demarer docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Lancer le conteneur
+      community.docker.docker_container:
+        name: flask-app
+        image: "cathalina/flask-app:{{ image_tag }}"
+        state: started
+        ports: "80:8080"
+        restart_policy: always
+        env:
+          APP_ENV: "{{ app_env }}"
