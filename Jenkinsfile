@@ -62,7 +62,7 @@ pipeline {
                     sh '''
                         ansible-playbook -i ansible/inventory.ini ansible/deploy.yml \
                           -e "image_tag=v$BUILD_NUMBER app_env=staging ansible_ssh_private_key_file=$SSH_KEY"
-                        curl -f http://37.166.157.49/health 
+                        curl -f --retry 5 --retry-delay 3 --retry-connrefused --max-time 10 http://35.181.56.97/health
                     '''
                 }
             }
