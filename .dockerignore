@@ -5,10 +5,13 @@ Dockerfile
 Jenkinsfile
 README.md
 ansible
-.gitlab-ci.yml
 pytest.ini
 .flake8
 .gitignore
 .pytest_cache
 __pycache__
 *.pyc
+terraform
+screenshots
+tests
+requirements-dev.txt

@@ -20,11 +20,22 @@ pipeline {
                 '''
             }
         }
+
+        stage('Unit tests'){
+            steps{
+                sh '''
+                    docker run --rm --volumes-from jenkins -w "$WORKSPACE" python:3.14-slim \
+                      sh -c "pip install -q -r requirements-dev.txt && pytest -v"
+                '''
+            }
+        }
+
         stage('Build'){
             steps{
                 sh 'docker build -t flask-app:v$BUILD_NUMBER .'
             }
         }
+
         stage('Test'){
             steps{
                  sh '''
@@ -41,7 +52,7 @@ pipeline {
             }
         }
 
-        stage('Package') {
+        stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
                                                 usernameVariable: 'DH_USER',
