@@ -1,5 +1,5 @@
 - name: Déployer l'appli Flask
-  hosts: staging
+  hosts: all
   become: true
 
   tasks:

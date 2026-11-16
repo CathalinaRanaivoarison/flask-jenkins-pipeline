@@ -5,6 +5,11 @@ pipeline {
         pollSCM('H/2 * * * *')
     }
 
+    environment {
+        STAGING_IP = '15.236.90.142'
+        PROD_IP    = '15.236.55.57'
+    }
+
     stages{
         stage('Code quality'){
             steps{
@@ -60,9 +65,23 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'aws-ssh-key',
                                                 keyFileVariable: 'SSH_KEY')]) {
                     sh '''
-                        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml \
+                        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml --limit staging \
                           -e "image_tag=v$BUILD_NUMBER app_env=staging ansible_ssh_private_key_file=$SSH_KEY"
-                        curl -f --retry 5 --retry-delay 3 --retry-connrefused --max-time 10 http://35.181.56.97/health
+                        curl -f --retry 5 --retry-delay 3 --retry-connrefused --max-time 10 http://$STAGING_IP/health
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy production') {
+            steps {
+                input message: 'Déployer en production ?', ok: 'Déployer'
+                withCredentials([sshUserPrivateKey(credentialsId: 'aws-ssh-key',
+                                                keyFileVariable: 'SSH_KEY')]) {
+                    sh '''
+                        ansible-playbook -i ansible/inventory.ini ansible/deploy.yml --limit production \
+                          -e "image_tag=v$BUILD_NUMBER app_env=production ansible_ssh_private_key_file=$SSH_KEY"
+                        curl -f --retry 5 --retry-delay 3 --retry-connrefused --max-time 10 http://$PROD_IP/health
                     '''
                 }
             }
