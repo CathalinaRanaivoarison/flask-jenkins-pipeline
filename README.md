@@ -14,7 +14,7 @@ flowchart LR
     q --> u[Unit tests<br/>pytest]
     u --> b[Build<br/>image Docker]
     b --> t[Test<br/>conteneur + curl]
-    t --> p[Package<br/>push Docker Hub]
+    t --> p[Push to Docker Hub<br/>push Docker Hub]
     p --> s[Deploy staging<br/>Ansible]
     s --> v{Validation<br/>manuelle}
     v --> pr[Deploy production<br/>Ansible]
@@ -45,7 +45,7 @@ flowchart LR
 | **Unit tests** | Teste le code avec pytest : les routes `/` et `/health`, et le gestionnaire d'erreurs, qui ne doit pas exposer le message interne |
 | **Build** | Construit l'image, taguée avec le numéro de build (`v$BUILD_NUMBER`) |
 | **Test** | Test de fumée : lance un conteneur à partir de l'image et vérifie que `/` et `/health` répondent. Le conteneur est supprimé même en cas d'échec (`post { always }`) |
-| **Package** | Publie l'image sur Docker Hub. Le token est stocké dans les credentials Jenkins et masqué dans les logs |
+| **Push to Docker Hub** | Publie l'image sur Docker Hub. Le token est stocké dans les credentials Jenkins et masqué dans les logs |
 | **Deploy staging** | Déploie l'image sur le serveur staging avec Ansible, puis vérifie `/health` |
 | **Deploy production** | Après **validation manuelle**, déploie la même image sur la production, puis vérifie `/health` |
 
@@ -89,13 +89,19 @@ flowchart LR
 # Contrôle qualité et tests unitaires
 docker run --rm -v "$PWD":/src -w /src python:3.14-slim \
   sh -c "pip install -q -r requirements-dev.txt && flake8 . && pytest -v"
+```
+![Tests unitaires](screenshots/test.png)
 
+```bash
 # Construire et lancer l'application
 docker build -t flask-app .
 docker run -d --name flask-app -p 8083:8080 flask-app
 curl http://localhost:8083          # Hello World
 curl http://localhost:8083/health   # {"env":"dev","status":"ok"}
 ```
+
+![Appel de l'API](screenshots/curl.png)
+![Site dans le navigateur](screenshots/site.png)
 
 ## Déployer sur AWS
 
